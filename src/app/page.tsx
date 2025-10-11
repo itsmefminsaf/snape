@@ -1,28 +1,13 @@
+import LandingPage from "@/components/LandingPage";
 import { auth } from "@/lib/auth";
-import Image from "next/image";
-import Link from "next/link";
+import { redirect } from "next/navigation";
 
 const HomePage = async () => {
-	const session = await auth.getSession();
-	return session ? (
-		<>
-			{session.user.picture && (
-				<Image
-					src={session.user.picture}
-					alt="User profile"
-					width={64}
-					height={64}
-				/>
-			)}
-			<h1>{session.user.name}</h1>
-			<h1>{}</h1>
-			<Link href="/auth/logout">Logout</Link>
-		</>
-	) : (
-		<>
-			<h1>Welcome to Snape</h1> <Link href="/auth/login">Login</Link>
-		</>
-	);
+  const session = await auth.getSession();
+
+  if (session?.user) return redirect("/dashboard");
+
+  return <LandingPage />;
 };
 
 export default HomePage;
