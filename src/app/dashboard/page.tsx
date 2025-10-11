@@ -7,7 +7,7 @@ const DashboardPage = async () => {
 
   if (!session) return redirect("/auth/login");
 
-  return <Dashboard />;
+  return <Dashboard user={session.user} />;
 };
 
 export default DashboardPage;
