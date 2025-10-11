@@ -5,11 +5,20 @@ import Image from "next/image";
 import logo from "@/assets/snape.svg";
 import { useState } from "react";
 import Link from "next/link";
-import { BiLogOut } from "react-icons/bi";
+import { BiLogOut, BiSend } from "react-icons/bi";
+import openai from "@/lib/huggingFace";
 
 const Dashboard = () => {
   const { user, isLoading } = useUser();
   const [showProfileDropDown, setShowProfileDropDown] = useState(false);
+  const [AIResponse, setAIResponse] = useState("");
+  const [prompt, setPrompt] = useState("");
+
+  const askAI = async () => {
+    const message = await openai(prompt);
+    message.content && setAIResponse(message.content?.toString());
+  };
+
   return (
     <>
       <nav className="flex w-screen items-center justify-between bg-neutral-950 px-5 py-3 text-white shadow-2xl">
@@ -49,6 +58,19 @@ const Dashboard = () => {
           )}
         </div>
       </nav>
+
+      <div>
+        <p>{AIResponse}</p>
+        <input
+          type="text"
+          placeholder="Ask Snape..."
+          value={prompt}
+          onChange={(e) => setPrompt(e.target.value)}
+        />
+        <button onClick={askAI}>
+          <BiSend />
+        </button>
+      </div>
     </>
   );
 };
