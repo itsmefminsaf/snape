@@ -21,7 +21,12 @@ const Nav = ({ name, picture }: { name: string; picture: string }) => {
       </div>
 
       <div className="border-x-2 border-x-neutral-800 p-8">
-        <button className="flex h-full w-full items-center justify-center gap-3">
+        <button
+          onClick={() => {
+            appState?.setState.setShowAddWorkSpaceForm(true);
+          }}
+          className="flex h-full w-full items-center justify-center gap-3"
+        >
           <IoAdd size={23} />
           New Workspace
         </button>
@@ -41,24 +46,6 @@ const Nav = ({ name, picture }: { name: string; picture: string }) => {
           />
           <IoIosArrowDown />
         </div>
-        {appState?.state.showProfileDropDown && (
-          <div className="absolute top-[100%] right-0 min-w-52 space-y-2 border-2 border-neutral-800 bg-neutral-950/50 px-5 py-3 shadow-2xl backdrop-blur-2xl">
-            <button
-              className="flex w-full items-center justify-between gap-3"
-              onClick={() => appState?.setState.setShowProfileDropDown(false)}
-            >
-              <p className="text-lg text-nowrap">{name}</p>
-              <CgClose size={20} />
-            </button>
-            <hr />
-            <ul>
-              <li className="flex items-center gap-3 rounded-lg px-2 py-1 duration-300 hover:bg-neutral-800">
-                <BiLogOut />
-                <Link href="/auth/logout">Logout</Link>
-              </li>
-            </ul>
-          </div>
-        )}
       </div>
     </nav>
   );
