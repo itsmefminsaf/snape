@@ -2,15 +2,15 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
 import { BiLogOut } from "react-icons/bi";
 import logo from "@/assets/snape.svg";
 import { CgClose } from "react-icons/cg";
 import { IoIosArrowDown } from "react-icons/io";
 import { IoAdd } from "react-icons/io5";
+import { useAppState } from "@/context/appState";
 
 const Nav = ({ name, picture }: { name: string; picture: string }) => {
-  const [showProfileDropDown, setShowProfileDropDown] = useState(false);
+  const appState = useAppState();
 
   return (
     <nav className="flex items-center justify-between border-b-2 border-b-neutral-800 bg-neutral-950/50 text-white backdrop-blur-2xl">
@@ -29,7 +29,7 @@ const Nav = ({ name, picture }: { name: string; picture: string }) => {
 
       <div className="relative border-l-2 border-l-neutral-800 p-6">
         <div
-          onClick={() => setShowProfileDropDown(true)}
+          onClick={() => appState?.setState.setShowProfileDropDown(true)}
           className="flex items-center justify-center gap-3"
         >
           <Image
@@ -41,11 +41,11 @@ const Nav = ({ name, picture }: { name: string; picture: string }) => {
           />
           <IoIosArrowDown />
         </div>
-        {showProfileDropDown && (
+        {appState?.state.showProfileDropDown && (
           <div className="absolute top-[100%] right-0 min-w-52 space-y-2 border-2 border-neutral-800 bg-neutral-950/50 px-5 py-3 shadow-2xl backdrop-blur-2xl">
             <button
               className="flex w-full items-center justify-between gap-3"
-              onClick={() => setShowProfileDropDown(false)}
+              onClick={() => appState?.setState.setShowProfileDropDown(false)}
             >
               <p className="text-lg text-nowrap">{name}</p>
               <CgClose size={20} />
