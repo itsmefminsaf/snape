@@ -9,7 +9,7 @@ const Dashboard = async ({ user }: { user: User }) => {
   console.log(workspaces);
   return (
     <>
-      <Nav name={user.name || "Unknown"} picture={user.picture || ""} />
+      <Nav picture={user.picture || ""} />
       <UserMenu name={user.name || "Unknown"} />
       <AddWorkspaceForm />
     </>
