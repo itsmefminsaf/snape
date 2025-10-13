@@ -1,7 +1,24 @@
 @import "tailwindcss";
 
+@theme {
+  --animate-gradient: gradient infinite 500ms linear;
+
+  @keyframes gradient {
+    0% {
+      background-position: 0%;
+    }
+    100% {
+      background-position: 200%;
+    }
+  }
+}
+
 @layer {
   .center {
     @apply flex items-center justify-center;
   }
+}
+
+::-webkit-scrollbar {
+  display: none;
 }

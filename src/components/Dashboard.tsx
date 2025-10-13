@@ -11,7 +11,7 @@ const Dashboard = async ({ user }: { user: User }) => {
     <>
       <Nav picture={user.picture || ""} />
       <UserMenu name={user.name || "Unknown"} />
-      <AddWorkspaceForm />
+      <AddWorkspaceForm email={user.email || ""} />
     </>
   );
 };
