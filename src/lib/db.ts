@@ -15,11 +15,11 @@ if (!clientPromise) {
   });
 }
 
-const connectDB = async (databaseName: string, collectionName: string) => {
+const connectDB = async (collectionName: string) => {
   if (!client) {
     client = await clientPromise;
   }
-  return client.db(databaseName).collection(collectionName);
+  return client.db().collection(collectionName);
 };
 
 export default connectDB;
