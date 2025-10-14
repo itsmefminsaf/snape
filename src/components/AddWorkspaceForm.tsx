@@ -2,7 +2,7 @@
 
 import { useAppState } from "@/context/appState";
 import { CgClose } from "react-icons/cg";
-import { useState } from "react";
+import React, { useState } from "react";
 import { BsGithub } from "react-icons/bs";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import { MdExpandMore } from "react-icons/md";
@@ -15,11 +15,17 @@ export type roleType = {
 };
 
 const AddWorkspaceForm = ({ email }: { email: string }) => {
+  const permissions = [
+    { name: "Create PR", id: "create_pr" },
+    { name: "Create Issue", id: "create_issue" },
+    { name: "Commend on issue", id: "comment_on_issue" },
+  ];
+
   const defaultRole = {
     title: "Admin",
     color: "#00F2F2",
     members: [email],
-    permissions: ["all_permissions"],
+    permissions: ["create_pr", "create_issue", "comment_on_issue"],
   };
 
   const appState = useAppState();
@@ -28,20 +34,75 @@ const AddWorkspaceForm = ({ email }: { email: string }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [created, setCreated] = useState(false);
+  const [showAddRoleForm, setShowAddRoleForm] = useState(false);
+  const [roleName, setRoleName] = useState("");
+  const [roleColor, setRoleColor] = useState("#131577");
+  const [member, setMember] = useState("");
+  const [members, setMembers] = useState<string[]>([]);
+  const [selectedPermissions, setSelectedPermissions] = useState<string[]>([]);
   const [showRoleDetail, setShowRoleDetail] = useState(0);
   const [workspaceName, setWorkspaceName] = useState("");
   const [roles, setRoles] = useState<roleType[]>([defaultRole]);
 
+  const resetAddRoleForm = () => {
+    setRoleName("");
+    setRoleColor("#134577");
+    setMember("");
+    setMembers([]);
+    setError("");
+    setSelectedPermissions([]);
+  };
+
   const resetForm = () => {
+    resetAddRoleForm();
+
     setStep(1);
     setLoading(false);
     setError("");
     setCreated(false);
+    setShowAddRoleForm(false);
     setShowRoleDetail(0);
     setWorkspaceName("");
     setRoles([defaultRole]);
 
     appState?.setState.setShowAddWorkSpaceForm(false);
+  };
+
+  const addMember = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      const trimmed = member.trim();
+
+      const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+      if (regex.test(trimmed)) {
+        if (!members.includes(trimmed)) {
+          setMembers([...members, trimmed]);
+          setMember("");
+        }
+      }
+    }
+  };
+
+  const addRole = () => {
+    if (!roleName) {
+      setError("Missing name");
+    } else if (members.length === 0) {
+      setError("Assign at least one member");
+    } else if (selectedPermissions.length === 0) {
+      setError("Set at least one permission");
+    } else {
+      const newRole = {
+        title: roleName,
+        color: roleColor,
+        members,
+        permissions: selectedPermissions,
+      };
+
+      setError("");
+      setRoles([...roles, newRole]);
+      resetAddRoleForm();
+      setShowAddRoleForm(false);
+    }
   };
 
   const handleClick = () => {
@@ -91,17 +152,17 @@ const AddWorkspaceForm = ({ email }: { email: string }) => {
             </button>
           </div>
 
-          <div className="center flex-col p-9">
-            {step === 1 ? (
-              <input
-                type="text"
-                value={workspaceName}
-                onChange={(e) => setWorkspaceName(e.target.value)}
-                placeholder="Enter workspace name"
-                className="border-b-2 border-b-neutral-800 text-xl outline-none sm:text-2xl"
-              />
-            ) : step === 2 ? (
-              <div className="max-h-80 w-full overflow-x-hidden overflow-y-scroll">
+          {step === 1 ? (
+            <input
+              type="text"
+              value={workspaceName}
+              onChange={(e) => setWorkspaceName(e.target.value)}
+              placeholder="Enter workspace name"
+              className="m-5 border-b-2 border-b-neutral-800 text-xl outline-none sm:text-2xl"
+            />
+          ) : step === 2 ? (
+            !showAddRoleForm && (
+              <div className="m-3 max-h-80 overflow-x-hidden overflow-y-scroll">
                 {roles.map((role, index) => (
                   <div
                     key={index}
@@ -147,22 +208,16 @@ const AddWorkspaceForm = ({ email }: { email: string }) => {
                           Permissions
                         </p>
                         <div>
-                          {role.permissions.map((permission, index) => {
-                            switch (permission) {
-                              case "all_permissions":
-                                return (
+                          {permissions.map((perm) =>
+                            role.permissions.map(
+                              (rolePerm) =>
+                                perm.id === rolePerm && (
                                   <p key={index} className="w-56 truncate">
-                                    All permission
+                                    {perm.name}
                                   </p>
-                                );
-                              case "read_only":
-                                return (
-                                  <p key={index} className="w-56 truncate">
-                                    Read only
-                                  </p>
-                                );
-                            }
-                          })}
+                                ),
+                            ),
+                          )}
                         </div>
                       </>
                     )}
@@ -173,24 +228,126 @@ const AddWorkspaceForm = ({ email }: { email: string }) => {
                   </div>
                 ))}
               </div>
+            )
+          ) : (
+            <button
+              type="button"
+              className="center m-5 gap-3 bg-white px-3 py-2 text-2xl text-neutral-950"
+            >
+              <BsGithub /> Link
+            </button>
+          )}
+
+          {step === 2 &&
+            (showAddRoleForm ? (
+              <div className="center m-3 flex-col gap-2 border-2 border-neutral-800 px-10 py-5">
+                <input
+                  type="text"
+                  placeholder="Role name"
+                  value={roleName}
+                  onChange={(e) => setRoleName(e.target.value)}
+                  className="border-2 border-neutral-800/50 px-3 py-1"
+                />
+
+                <div className="flex gap-2">
+                  <label htmlFor="role_color">Select role color : </label>
+                  <input
+                    type="color"
+                    id="role_color"
+                    className="w-5"
+                    value={roleColor}
+                    onChange={(e) => setRoleColor(e.target.value)}
+                  />
+                </div>
+
+                <div className="w-full">
+                  <p>Add members</p>
+
+                  <input
+                    className="w-full border-2 border-b-0 border-neutral-800/50 px-3 py-1"
+                    type="email"
+                    value={member}
+                    placeholder="Member's Email"
+                    onChange={(e) => setMember(e.target.value)}
+                    onKeyDown={addMember}
+                  />
+
+                  <div className="max-h-32 overflow-scroll border-2 border-neutral-800/50 p-1">
+                    {members.map((member, index) => (
+                      <p key={index} className="flex items-center gap-1">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setMembers((prev) =>
+                              prev.filter((_, i) => i !== index),
+                            );
+                          }}
+                        >
+                          <CgClose />
+                        </button>
+                        {member}
+                      </p>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="w-full">
+                  <p>Select permissions</p>
+
+                  <div className="max-h-32 w-full overflow-scroll border-2 border-neutral-800 px-2 py-1">
+                    {permissions.map((perm, index) => (
+                      <div key={index} className="flex items-center gap-1">
+                        <input
+                          type="checkbox"
+                          id={index.toString()}
+                          onChange={(e) => {
+                            e.target.checked
+                              ? setSelectedPermissions([
+                                  ...selectedPermissions,
+                                  perm.id,
+                                ])
+                              : setSelectedPermissions((prev) =>
+                                  prev.filter(
+                                    (existingPerm) => existingPerm !== perm.id,
+                                  ),
+                                );
+                          }}
+                        />
+                        <label htmlFor={index.toString()}>{perm.name}</label>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="center gap-3">
+                  <button
+                    type="button"
+                    className="border-2 border-white px-3 py-1"
+                    onClick={() => {
+                      resetAddRoleForm();
+                      setShowAddRoleForm(false);
+                    }}
+                  >
+                    cancel
+                  </button>
+                  <button
+                    onClick={addRole}
+                    type="button"
+                    className="bg-white px-3 py-1 font-bold text-neutral-950"
+                  >
+                    Add Role
+                  </button>
+                </div>
+              </div>
             ) : (
               <button
                 type="button"
-                className="center gap-3 bg-white px-3 py-2 text-2xl text-neutral-950"
+                className="mx-[10%] mb-2 w-4/5 border-2 border-white px-3 py-2 text-sm"
+                onClick={() => setShowAddRoleForm(true)}
               >
-                <BsGithub /> Link
+                Add role
               </button>
-            )}
-          </div>
-
-          {step === 2 && (
-            <button
-              type="button"
-              className="mx-[10%] mb-2 w-4/5 border-2 border-white px-3 py-2 text-sm"
-            >
-              Add role
-            </button>
-          )}
+            ))}
 
           {error && (
             <p className="border-t-2 border-t-red-500 bg-red-500/10 px-2 py-3 text-center text-sm">
