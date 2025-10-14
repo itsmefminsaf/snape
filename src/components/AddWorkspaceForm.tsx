@@ -25,7 +25,7 @@ const AddWorkspaceForm = ({ email }: { email: string }) => {
     title: "Admin",
     color: "#00F2F2",
     members: [email],
-    permissions: ["create_pr", "create_issue", "comment_on_issue"],
+    permissions: permissions.map((perm) => perm.id),
   };
 
   const appState = useAppState();
@@ -55,7 +55,6 @@ const AddWorkspaceForm = ({ email }: { email: string }) => {
 
   const resetForm = () => {
     resetAddRoleForm();
-
     setStep(1);
     setLoading(false);
     setError("");
@@ -64,7 +63,6 @@ const AddWorkspaceForm = ({ email }: { email: string }) => {
     setShowRoleDetail(0);
     setWorkspaceName("");
     setRoles([defaultRole]);
-
     appState?.setState.setShowAddWorkSpaceForm(false);
   };
 
