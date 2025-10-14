@@ -6,8 +6,9 @@ import React, { useState } from "react";
 import { BsGithub } from "react-icons/bs";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import { MdExpandMore } from "react-icons/md";
+import addWorkspace from "@/actions/addWorkspace";
 
-export type roleType = {
+type roleType = {
   title: string;
   color: string;
   members: string[];
@@ -33,7 +34,7 @@ const AddWorkspaceForm = ({ email }: { email: string }) => {
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [created, setCreated] = useState(false);
+  const [created, setCreated] = useState("");
   const [showAddRoleForm, setShowAddRoleForm] = useState(false);
   const [roleName, setRoleName] = useState("");
   const [roleColor, setRoleColor] = useState("#131577");
@@ -58,7 +59,7 @@ const AddWorkspaceForm = ({ email }: { email: string }) => {
     setStep(1);
     setLoading(false);
     setError("");
-    setCreated(false);
+    setCreated("");
     setShowAddRoleForm(false);
     setShowRoleDetail(0);
     setWorkspaceName("");
@@ -103,7 +104,10 @@ const AddWorkspaceForm = ({ email }: { email: string }) => {
     }
   };
 
-  const handleClick = () => {
+  const handleNext = async (
+    e: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement>,
+  ) => {
+    e.preventDefault();
     setError("");
     setLoading(true);
 
@@ -111,8 +115,15 @@ const AddWorkspaceForm = ({ email }: { email: string }) => {
       setLoading(false);
       resetForm();
     } else if (step === 2) {
+      const newWorkspace = {
+        workspaceName,
+        roles,
+      };
+
+      const workspaceId = await addWorkspace(JSON.stringify(newWorkspace));
+
+      setCreated(workspaceId);
       setLoading(false);
-      setCreated(true);
       setStep(3);
     } else {
       if (!workspaceName) {
@@ -128,7 +139,10 @@ const AddWorkspaceForm = ({ email }: { email: string }) => {
   return (
     appState?.state.showAddWorkSpaceForm && (
       <div className="fixed flex h-full w-full items-center justify-center bg-neutral-950/20 backdrop-blur-2xl">
-        <form className="relative w-[21rem] border-2 border-neutral-800 bg-neutral-950/70 text-white backdrop-blur-2xl">
+        <form
+          onSubmit={handleNext}
+          className="relative w-[21rem] border-2 border-neutral-800 bg-neutral-950/70 text-white backdrop-blur-2xl"
+        >
           {loading && (
             <div className="animate-gradient absolute h-0.5 w-full bg-gradient-to-r from-transparent via-white to-transparent bg-[length:200%]"></div>
           )}
@@ -369,7 +383,7 @@ const AddWorkspaceForm = ({ email }: { email: string }) => {
               className="center w-28 gap-3 bg-white px-3 py-1 font-bold text-neutral-950 duration-300 hover:gap-1 disabled:opacity-50 disabled:hover:gap-3 sm:text-lg"
               type="button"
               disabled={loading}
-              onClick={handleClick}
+              onClick={handleNext}
             >
               <FaArrowRight size={17} />
               {step === 3 ? "Finish" : step === 2 ? "Create" : "Next"}
