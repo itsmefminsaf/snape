@@ -2,17 +2,23 @@
 
 import { useAppState } from "@/context/appState";
 import { CgClose } from "react-icons/cg";
-import { roleType } from "@/types/newWorkspaceForm";
 import { useState } from "react";
 import { BsGithub } from "react-icons/bs";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import { MdExpandMore } from "react-icons/md";
 
+export type roleType = {
+  title: string;
+  color: string;
+  members: string[];
+  permissions: string[];
+};
+
 const AddWorkspaceForm = ({ email }: { email: string }) => {
   const defaultRole = {
     title: "Admin",
     color: "#00F2F2",
-    members: [{ name: "You", email }],
+    members: [email],
     permissions: ["all_permissions"],
   };
 
@@ -128,10 +134,9 @@ const AddWorkspaceForm = ({ email }: { email: string }) => {
                         {
                           <div className="col-span-3">
                             {role.members.map((member, index) => (
-                              <p
-                                key={index}
-                                className="w-56 truncate"
-                              >{`${member.email}(${member.name})`}</p>
+                              <p key={index} className="w-56 truncate">
+                                {member}
+                              </p>
                             ))}
                           </div>
                         }
