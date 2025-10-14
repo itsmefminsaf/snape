@@ -18,7 +18,3 @@
     @apply flex items-center justify-center;
   }
 }
-
-::-webkit-scrollbar {
-  display: none;
-}
