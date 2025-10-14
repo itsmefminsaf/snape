@@ -19,7 +19,8 @@ const connectDB = async (collectionName: string) => {
   if (!client) {
     client = await clientPromise;
   }
-  return client.db().collection(collectionName);
+
+  return client.db(process.env.NODE_ENV).collection(collectionName);
 };
 
 export default connectDB;
