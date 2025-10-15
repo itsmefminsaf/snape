@@ -1,8 +1,14 @@
+import { useAppState } from "@/context/appState";
 import { sortedWorkspaceType } from "@/types/workspace";
 
-const WorkspaceCard = ({workspace}:{workspace:sortedWorkspaceType}) => {
+const WorkspaceCard = ({ workspace }: { workspace: sortedWorkspaceType }) => {
+  const appState = useAppState();
+
   return (
-    <button className="border-2 w-72 border-neutral-800 bg-neutral-950/50">
+    <button
+      onClick={() => appState?.setState.setOpenWorkspace(workspace._id)}
+      className="w-72 border-2 border-neutral-800 bg-neutral-950/50"
+    >
       <h5 className="border-b-2 border-neutral-800 px-5 py-3 text-left">
         {workspace.workspaceName}
       </h5>
@@ -18,4 +24,4 @@ const WorkspaceCard = ({workspace}:{workspace:sortedWorkspaceType}) => {
   );
 };
 
-export default WorkspaceCard
+export default WorkspaceCard;
