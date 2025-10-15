@@ -7,13 +7,7 @@ import { BsGithub } from "react-icons/bs";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import { MdExpandMore } from "react-icons/md";
 import addWorkspace from "@/actions/addWorkspace";
-
-type roleType = {
-  title: string;
-  color: string;
-  members: string[];
-  permissions: string[];
-};
+import { roleType } from "@/types/workspace";
 
 const AddWorkspaceForm = ({ email }: { email: string }) => {
   const permissions = [
