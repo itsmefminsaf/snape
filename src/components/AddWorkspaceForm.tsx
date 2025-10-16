@@ -3,11 +3,12 @@
 import { useAppState } from "@/context/appState";
 import { CgClose } from "react-icons/cg";
 import React, { useState } from "react";
-import { BsGithub } from "react-icons/bs";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import { MdExpandMore } from "react-icons/md";
 import addWorkspace from "@/actions/addWorkspace";
 import { roleType } from "@/types/workspace";
+import LinkGithubAccountButton from "./LinkGithubAccountButton";
+import { TiTick } from "react-icons/ti";
 
 const AddWorkspaceForm = ({ email }: { email: string }) => {
   const permissions = [
@@ -30,6 +31,7 @@ const AddWorkspaceForm = ({ email }: { email: string }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [created, setCreated] = useState(false);
+  const [githubToken, setGithubToken] = useState<string | null>(null);
   const [showAddRoleForm, setShowAddRoleForm] = useState(false);
   const [roleName, setRoleName] = useState("");
   const [roleColor, setRoleColor] = useState("#131577");
@@ -142,23 +144,20 @@ const AddWorkspaceForm = ({ email }: { email: string }) => {
             <div className="animate-gradient absolute h-0.5 w-full bg-gradient-to-r from-transparent via-white to-transparent bg-[length:200%]"></div>
           )}
 
-          <div className="flex items-center justify-between border-b-2 border-b-neutral-800 py-3">
-            <h2 className="px-3 text-2xl font-bold">
-              {step === 1
-                ? "Name of the workspace"
-                : step === 2
-                  ? "Roles and Permissions"
-                  : "Link GitHub account"}
-            </h2>
-            <button
-              className="border-l-2 border-l-neutral-800 bg-neutral-950/50 px-3"
-              type="reset"
-              onClick={resetForm}
-            >
-              <CgClose />
-            </button>
-          </div>
-
+          {!created && (
+            <div className="flex items-center justify-between border-b-2 border-b-neutral-800 py-3">
+              <h2 className="px-3 text-2xl font-bold">
+                {step === 1 ? "Name of the workspace" : "Roles and Permissions"}
+              </h2>
+              <button
+                className="border-l-2 border-l-neutral-800 bg-neutral-950/50 px-3"
+                type="reset"
+                onClick={resetForm}
+              >
+                <CgClose />
+              </button>
+            </div>
+          )}
           {step === 1 ? (
             <input
               type="text"
@@ -237,12 +236,16 @@ const AddWorkspaceForm = ({ email }: { email: string }) => {
               </div>
             )
           ) : (
-            <button
-              type="button"
-              className="center m-5 gap-3 bg-white px-3 py-2 text-2xl text-neutral-950"
-            >
-              <BsGithub /> Link
-            </button>
+            <div className="center py-4">
+              {githubToken ? (
+                <div className="center m-5 flex-col gap-5 text-xl">
+                  <TiTick size={80} className="text-green-600" />
+                  Github connected successfully
+                </div>
+              ) : (
+                <LinkGithubAccountButton setGithubToken={setGithubToken} />
+              )}
+            </div>
           )}
 
           {step === 2 &&
@@ -381,7 +384,7 @@ const AddWorkspaceForm = ({ email }: { email: string }) => {
               onClick={handleNext}
             >
               <FaArrowRight size={17} />
-              {step === 3 ? "Finish" : step === 2 ? "Create" : "Next"}
+              {step === 3 ? githubToken ? "Finish" : "Skip" : step === 2 ? "Create" : "Next"}
             </button>
           </div>
         </form>

@@ -5,6 +5,8 @@ import { useEffect, useState } from "react";
 import { BiSend } from "react-icons/bi";
 import { BsGithub } from "react-icons/bs";
 import { IoMdArrowRoundBack } from "react-icons/io";
+import LinkGithubAccount from "./LinkGithubAccountButton";
+import LinkGithubAccountButton from "./LinkGithubAccountButton";
 
 const Workspace = ({ workspaceData }: { workspaceData: workspaceType }) => {
   const appState = useAppState();
@@ -19,7 +21,7 @@ const Workspace = ({ workspaceData }: { workspaceData: workspaceType }) => {
       setGithubToken(await getWorkspaceGHToken(workspaceData._id));
       setLoading(false);
     })();
-  }, [githubToken,workspaceData._id]);
+  }, [githubToken, workspaceData._id]);
 
   return (
     <section className="fixed size-full text-white">
@@ -67,14 +69,11 @@ const Workspace = ({ workspaceData }: { workspaceData: workspaceType }) => {
             </div>
           </>
         ) : workspaceData.roles[0].permissions.includes("connect_github") ? (
-          <button className="center flex-col gap-2">
-            <BsGithub size={25} />
-            <span className="text-2xl">Connect Github</span>
-          </button>
+          <LinkGithubAccountButton setGithubToken={setGithubToken} />
         ) : (
           <p>
-            You can&apos;t use the AI now. Please connect to github in order
-            to use Snape
+            You can&apos;t use the AI now. Please connect to github in order to
+            use Snape
           </p>
         )}
       </div>
