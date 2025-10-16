@@ -133,7 +133,7 @@ const AddWorkspaceForm = ({ email }: { email: string }) => {
 
   return (
     appState?.state.showAddWorkSpaceForm && (
-      <div className="fixed flex h-full z-40 w-full items-center justify-center bg-neutral-950/20 backdrop-blur-2xl">
+      <div className="fixed z-40 flex h-full w-full items-center justify-center bg-neutral-950/20 backdrop-blur-2xl">
         <form
           onSubmit={handleNext}
           className="relative w-[21rem] border-2 border-neutral-800 bg-neutral-950/70 text-white backdrop-blur-2xl"
@@ -307,7 +307,7 @@ const AddWorkspaceForm = ({ email }: { email: string }) => {
                         <input
                           type="checkbox"
                           id={index.toString()}
-                          onChange={(e) => {
+                          onChange={(e) =>
                             e.target.checked
                               ? setSelectedPermissions([
                                   ...selectedPermissions,
@@ -317,8 +317,8 @@ const AddWorkspaceForm = ({ email }: { email: string }) => {
                                   prev.filter(
                                     (existingPerm) => existingPerm !== perm.id,
                                   ),
-                                );
-                          }}
+                                )
+                          }
                         />
                         <label htmlFor={index.toString()}>{perm.name}</label>
                       </div>
