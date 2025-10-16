@@ -3,7 +3,7 @@ import { User } from "@auth0/nextjs-auth0/types";
 import AddWorkspaceForm from "./AddWorkspaceForm";
 import UserMenu from "./UserMenu";
 import Workspaces from "./Workspaces";
-import getWorkspaceList from "@/actions/getWorkspaces";
+import { getWorkspaceList } from "@/actions/getWorkspaces";
 
 const Dashboard = async ({ user }: { user: User }) => {
   const workspaces = await getWorkspaceList(user.email || "");

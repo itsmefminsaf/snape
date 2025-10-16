@@ -7,9 +7,7 @@ const addWorkspace = async (workspaceJson: string) => {
     const workspace = JSON.parse(workspaceJson);
     const workspaceCollection = await connectDB("workspaces");
 
-    const newWorkspace = await workspaceCollection.insertOne(workspace);
-
-    return newWorkspace.insertedId.toString();
+    await workspaceCollection.insertOne(workspace);
   } catch (error) {
     throw new Error(`Error creating workspace: ${error}`);
   }

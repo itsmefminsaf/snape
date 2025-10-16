@@ -1,17 +1,18 @@
 "use client";
 
+import { workspaceType } from "@/types/workspace";
 import { createContext, useContext, useState } from "react";
 
 type UIState = {
   showProfileDropDown: boolean;
   showAddWorkSpaceForm: boolean;
-  openWorkspace: string;
+  openWorkspace: workspaceType | null;
 };
 
 type UISetters = {
   setShowProfileDropDown: React.Dispatch<React.SetStateAction<boolean>>;
   setShowAddWorkSpaceForm: React.Dispatch<React.SetStateAction<boolean>>;
-  setOpenWorkspace: React.Dispatch<React.SetStateAction<string>>;
+  setOpenWorkspace: React.Dispatch<React.SetStateAction<workspaceType | null>>;
 };
 
 export type appStateType = {
@@ -26,7 +27,9 @@ export const useAppState = () => useContext(AppStateContext);
 const AppStateProvider = ({ children }: { children: React.ReactNode }) => {
   const [showProfileDropDown, setShowProfileDropDown] = useState(false);
   const [showAddWorkSpaceForm, setShowAddWorkSpaceForm] = useState(false);
-  const [openWorkspace, setOpenWorkspace] = useState("");
+  const [openWorkspace, setOpenWorkspace] = useState<workspaceType | null>(
+    null,
+  );
 
   const appState: appStateType = {
     state: { showProfileDropDown, showAddWorkSpaceForm, openWorkspace },

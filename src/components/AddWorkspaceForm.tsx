@@ -14,6 +14,7 @@ const AddWorkspaceForm = ({ email }: { email: string }) => {
     { name: "Create PR", id: "create_pr" },
     { name: "Create Issue", id: "create_issue" },
     { name: "Commend on issue", id: "comment_on_issue" },
+    { name: "Connect Github", id: "connect_github" },
   ];
 
   const defaultRole = {
@@ -28,7 +29,7 @@ const AddWorkspaceForm = ({ email }: { email: string }) => {
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [created, setCreated] = useState("");
+  const [created, setCreated] = useState(false);
   const [showAddRoleForm, setShowAddRoleForm] = useState(false);
   const [roleName, setRoleName] = useState("");
   const [roleColor, setRoleColor] = useState("#131577");
@@ -53,7 +54,7 @@ const AddWorkspaceForm = ({ email }: { email: string }) => {
     setStep(1);
     setLoading(false);
     setError("");
-    setCreated("");
+    setCreated(false);
     setShowAddRoleForm(false);
     setShowRoleDetail(0);
     setWorkspaceName("");
@@ -114,9 +115,9 @@ const AddWorkspaceForm = ({ email }: { email: string }) => {
         roles,
       };
 
-      const workspaceId = await addWorkspace(JSON.stringify(newWorkspace));
+      await addWorkspace(JSON.stringify(newWorkspace));
 
-      setCreated(workspaceId);
+      setCreated(true);
       setLoading(false);
       setStep(3);
     } else {
@@ -132,7 +133,7 @@ const AddWorkspaceForm = ({ email }: { email: string }) => {
 
   return (
     appState?.state.showAddWorkSpaceForm && (
-      <div className="fixed flex h-full w-full items-center justify-center bg-neutral-950/20 backdrop-blur-2xl">
+      <div className="fixed flex h-full z-40 w-full items-center justify-center bg-neutral-950/20 backdrop-blur-2xl">
         <form
           onSubmit={handleNext}
           className="relative w-[21rem] border-2 border-neutral-800 bg-neutral-950/70 text-white backdrop-blur-2xl"
