@@ -2,10 +2,10 @@
 
 import { useAppState } from "@/context/appState";
 import { CgClose } from "react-icons/cg";
-import React, { useState } from "react";
+import { useState } from "react";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import { MdExpandMore } from "react-icons/md";
-import addWorkspace from "@/actions/addWorkspace";
+import { addWorkspace } from "@/actions/addWorkspace";
 import { roleType } from "@/types/workspace";
 import LinkGithubAccountButton from "./LinkGithubAccountButton";
 import { TiTick } from "react-icons/ti";
@@ -30,8 +30,8 @@ const AddWorkspaceForm = ({ email }: { email: string }) => {
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [created, setCreated] = useState(false);
-  const [githubToken, setGithubToken] = useState<string | null>(null);
+  const [created, setCreated] = useState("");
+  const [githubToken, setGithubToken] = useState("");
   const [showAddRoleForm, setShowAddRoleForm] = useState(false);
   const [roleName, setRoleName] = useState("");
   const [roleColor, setRoleColor] = useState("#131577");
@@ -56,7 +56,7 @@ const AddWorkspaceForm = ({ email }: { email: string }) => {
     setStep(1);
     setLoading(false);
     setError("");
-    setCreated(false);
+    setCreated("");
     setShowAddRoleForm(false);
     setShowRoleDetail(0);
     setWorkspaceName("");
@@ -117,11 +117,14 @@ const AddWorkspaceForm = ({ email }: { email: string }) => {
         roles,
       };
 
-      await addWorkspace(JSON.stringify(newWorkspace));
+      const newWorkspaceId = await addWorkspace(JSON.stringify(newWorkspace));
 
-      setCreated(true);
-      setLoading(false);
-      setStep(3);
+      if (newWorkspaceId) {
+        setCreated(newWorkspaceId);
+        setLoading(false);
+        setStep(3);
+      }
+      
     } else {
       if (!workspaceName) {
         setError("Please provide a name for your workspace");
@@ -236,16 +239,13 @@ const AddWorkspaceForm = ({ email }: { email: string }) => {
               </div>
             )
           ) : (
-            <div className="center py-4">
-              {githubToken ? (
-                <div className="center m-5 flex-col gap-5 text-xl">
-                  <TiTick size={80} className="text-green-600" />
-                  Github connected successfully
-                </div>
-              ) : (
-                <LinkGithubAccountButton setGithubToken={setGithubToken} />
-              )}
-            </div>
+            created && (
+              <LinkGithubAccountButton
+                newWorkspaceId={created}
+                githubToken={githubToken}
+                setGithubToken={setGithubToken}
+              />
+            )
           )}
 
           {step === 2 &&
@@ -384,7 +384,13 @@ const AddWorkspaceForm = ({ email }: { email: string }) => {
               onClick={handleNext}
             >
               <FaArrowRight size={17} />
-              {step === 3 ? githubToken ? "Finish" : "Skip" : step === 2 ? "Create" : "Next"}
+              {step === 3
+                ? githubToken
+                  ? "Finish"
+                  : "Skip"
+                : step === 2
+                  ? "Create"
+                  : "Next"}
             </button>
           </div>
         </form>

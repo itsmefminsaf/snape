@@ -8,8 +8,8 @@ type roleType = {
 };
 
 export type workspaceType = {
-  _id: ObjectId;
+  _id: string;
   workspaceName: string;
   roles: roleType[];
-  githubToken?: string
+  gitHubToken?: string
 };

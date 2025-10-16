@@ -1,24 +1,25 @@
-import { getWorkspaceGHToken } from "@/actions/getWorkspaces";
 import { useAppState } from "@/context/appState";
 import { workspaceType } from "@/types/workspace";
 import { useEffect, useState } from "react";
 import { BiSend } from "react-icons/bi";
-import { BsGithub } from "react-icons/bs";
 import { IoMdArrowRoundBack } from "react-icons/io";
-import LinkGithubAccount from "./LinkGithubAccountButton";
 import LinkGithubAccountButton from "./LinkGithubAccountButton";
+import { getWorkspaceGithubToken } from "@/actions/getWorkspaces";
 
 const Workspace = ({ workspaceData }: { workspaceData: workspaceType }) => {
   const appState = useAppState();
   const [loading, setLoading] = useState(true);
   const [prompt, setPrompt] = useState("");
-  const [githubToken, setGithubToken] = useState<string | null>(null);
+  const [githubToken, setGithubToken] = useState("");
 
   useEffect(() => {
     (async () => {
       setLoading(true);
       setPrompt("");
-      setGithubToken(await getWorkspaceGHToken(workspaceData._id));
+      const githubConnectedToken = await getWorkspaceGithubToken(workspaceData._id);
+      console.log(githubConnectedToken);
+      
+      setGithubToken(githubConnectedToken ? githubConnectedToken : "");
       setLoading(false);
     })();
   }, [githubToken, workspaceData._id]);
@@ -69,7 +70,11 @@ const Workspace = ({ workspaceData }: { workspaceData: workspaceType }) => {
             </div>
           </>
         ) : workspaceData.roles[0].permissions.includes("connect_github") ? (
-          <LinkGithubAccountButton setGithubToken={setGithubToken} />
+          <LinkGithubAccountButton
+            newWorkspaceId={workspaceData._id.toString()}
+            githubToken={githubToken}
+            setGithubToken={setGithubToken}
+          />
         ) : (
           <p>
             You can&apos;t use the AI now. Please connect to github in order to

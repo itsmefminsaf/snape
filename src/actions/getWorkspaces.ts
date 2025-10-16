@@ -4,16 +4,18 @@ import connectDB from "@/lib/db";
 import { workspaceType } from "@/types/workspace";
 import { ObjectId } from "mongodb";
 
-export const getWorkspaceList = async (email: string) => {
+export const getWorkspaceList = async (
+  email: string,
+): Promise<workspaceType[]> => {
   try {
     const workspaceCollection = await connectDB("workspaces");
 
-    const workspaces = (await workspaceCollection
+    const workspacesDocumentLink = await workspaceCollection
       .aggregate([
         { $match: { "roles.members": email } },
         {
           $project: {
-            _id: 0,
+            _id: 1,
             workspaceName: 1,
             roles: {
               $filter: {
@@ -25,24 +27,36 @@ export const getWorkspaceList = async (email: string) => {
           },
         },
       ])
-      .toArray()) as unknown as workspaceType[];
+      .toArray();
 
-    return workspaces;
+    const workspaceList: workspaceType[] = workspacesDocumentLink.map(
+      (workspace) => {
+        return {
+          _id: workspace._id.toString(),
+          workspaceName: workspace.workspaceName as string,
+          roles: workspace.roles,
+        };
+      },
+    );
+
+    return workspaceList;
   } catch (error) {
     throw new Error(`Error getting workspaces: ${error}`);
   }
 };
 
-export const getWorkspaceGHToken = async (_id: ObjectId) => {
+export const getWorkspaceGithubToken = async (_id: string) => {
   try {
     const workspaceCollections = await connectDB("workspaces");
 
-    const workspace = workspaceCollections.aggregate([
-      { $match: { _id } },
-      { $project: { _id: 0, workspaceName: 1, roles: 0, githubToken: 1 } },
-    ]) as unknown as workspaceType;
+    const aggregateCurser = workspaceCollections.aggregate([
+      { $match: { _id: new ObjectId(_id) } },
+      { $project: { _id: 0, githubToken: 1 } },
+    ]);
 
-    return workspace.githubToken ? workspace.githubToken : null;
+    const workspace = await aggregateCurser.next();
+
+    return workspace?.githubToken ? workspace.githubToken : null;
   } catch (error) {
     throw new Error(`Error getting workspace data: ${error}`);
   }

@@ -1,16 +1,34 @@
 "use server";
 
 import connectDB from "@/lib/db";
+import { ObjectId } from "mongodb";
 
-const addWorkspace = async (workspaceJson: string) => {
+export const linkGithubAccount = async (workspaceId: string, githubToken: string) => {
   try {
-    const workspace = JSON.parse(workspaceJson);
     const workspaceCollection = await connectDB("workspaces");
+    const update = await workspaceCollection.updateOne(
+      { _id: new ObjectId(workspaceId) },
+      { $set: { githubToken } },
+    );
 
-    await workspaceCollection.insertOne(workspace);
+    return update.modifiedCount === 1;
   } catch (error) {
-    throw new Error(`Error creating workspace: ${error}`);
+    console.log(`Error linking github account: ${error}`);
+    return false;
   }
 };
 
-export default addWorkspace;
+export const addWorkspace = async (workspaceJson: string) => {
+  try {
+    const workspace = JSON.parse(workspaceJson);
+    
+    const workspaceCollection = await connectDB("workspaces");
+
+    const newWorkspace = await workspaceCollection.insertOne(workspace);
+
+    return newWorkspace.insertedId.toString();
+  } catch (error) {
+    console.log(`Error creating workspace: ${error}`);
+    return "";
+  }
+};
