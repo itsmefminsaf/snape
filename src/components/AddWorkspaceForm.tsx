@@ -8,7 +8,6 @@ import { MdExpandMore } from "react-icons/md";
 import { addWorkspace } from "@/actions/addWorkspace";
 import { roleType } from "@/types/workspace";
 import LinkGithubAccountButton from "./LinkGithubAccountButton";
-import { TiTick } from "react-icons/ti";
 
 const AddWorkspaceForm = ({ email }: { email: string }) => {
   const permissions = [
