@@ -6,25 +6,24 @@ import { TiTick } from "react-icons/ti";
 
 const LinkGithubAccountButton = ({
   newWorkspaceId,
-  githubToken,
-  setGithubToken,
+  githubTokenExist,
+  setGithubTokenExist,
 }: {
   newWorkspaceId: string;
-  githubToken: string;
-  setGithubToken: React.Dispatch<React.SetStateAction<string>>;
+  githubTokenExist: boolean;
+  setGithubTokenExist: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const handleMessage = async (event: MessageEvent) => {
-      if (event.data.githubToken) {
+      if (event.data.code) {
         const success = await linkGithubAccount(
           newWorkspaceId,
-          event.data.githubToken,
+          event.data.code,
         );
-        if (success) {
-          setGithubToken(event.data.githubToken);
-        }
+        
+        setGithubTokenExist(success);
         setLoading(false);
       }
     };
@@ -46,7 +45,7 @@ const LinkGithubAccountButton = ({
     </div>
   ) : (
     <div className="center py-4">
-      {githubToken ? (
+      {githubTokenExist ? (
         <div className="center m-5 flex-col gap-5 text-xl">
           <TiTick size={80} className="text-green-600" />
           Github connected successfully

@@ -56,7 +56,7 @@ export const getWorkspaceGithubToken = async (_id: string) => {
 
     const workspace = await aggregateCurser.next();
 
-    return workspace?.githubToken ? workspace.githubToken : null;
+    return workspace?.githubToken ? true : false;
   } catch (error) {
     throw new Error(`Error getting workspace data: ${error}`);
   }

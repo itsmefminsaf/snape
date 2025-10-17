@@ -10,19 +10,19 @@ const Workspace = ({ workspaceData }: { workspaceData: workspaceType }) => {
   const appState = useAppState();
   const [loading, setLoading] = useState(true);
   const [prompt, setPrompt] = useState("");
-  const [githubToken, setGithubToken] = useState("");
+  const [githubTokenExist, setGithubTokenExist] = useState(false);
 
   useEffect(() => {
     (async () => {
       setLoading(true);
       setPrompt("");
-      const githubConnectedToken = await getWorkspaceGithubToken(workspaceData._id);
-      console.log(githubConnectedToken);
-      
-      setGithubToken(githubConnectedToken ? githubConnectedToken : "");
+      const githubConnectedToken = await getWorkspaceGithubToken(
+        workspaceData._id,
+      );
+      setGithubTokenExist(githubConnectedToken);
       setLoading(false);
     })();
-  }, [githubToken, workspaceData._id]);
+  }, [githubTokenExist, workspaceData._id]);
 
   return (
     <section className="fixed size-full text-white">
@@ -51,7 +51,7 @@ const Workspace = ({ workspaceData }: { workspaceData: workspaceType }) => {
       <div className="flex h-[calc(100%-150px)] w-full flex-col items-center justify-center gap-2 p-3">
         {loading ? (
           <div className="animate-gradient to-neutral-0/30 size-full bg-gradient-to-b from-neutral-600/30 bg-[length:150%]"></div>
-        ) : githubToken ? (
+        ) : githubTokenExist ? (
           <>
             <div className="h-full w-full bg-neutral-950/30 p-3 backdrop-blur-2xl"></div>
             <div className="flex w-full items-end justify-between gap-2 border-2 border-neutral-800 px-2 duration-300 focus-within:border-neutral-500 md:w-3/5 md:focus-within:w-4/5">
@@ -72,8 +72,8 @@ const Workspace = ({ workspaceData }: { workspaceData: workspaceType }) => {
         ) : workspaceData.roles[0].permissions.includes("connect_github") ? (
           <LinkGithubAccountButton
             newWorkspaceId={workspaceData._id.toString()}
-            githubToken={githubToken}
-            setGithubToken={setGithubToken}
+            githubTokenExist={githubTokenExist}
+            setGithubTokenExist={setGithubTokenExist}
           />
         ) : (
           <p>

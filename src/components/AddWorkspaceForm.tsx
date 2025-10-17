@@ -31,7 +31,7 @@ const AddWorkspaceForm = ({ email }: { email: string }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [created, setCreated] = useState("");
-  const [githubToken, setGithubToken] = useState("");
+  const [githubTokenExist, setGithubTokenExist] = useState(false);
   const [showAddRoleForm, setShowAddRoleForm] = useState(false);
   const [roleName, setRoleName] = useState("");
   const [roleColor, setRoleColor] = useState("#131577");
@@ -57,6 +57,7 @@ const AddWorkspaceForm = ({ email }: { email: string }) => {
     setLoading(false);
     setError("");
     setCreated("");
+    setGithubTokenExist(false)
     setShowAddRoleForm(false);
     setShowRoleDetail(0);
     setWorkspaceName("");
@@ -242,8 +243,8 @@ const AddWorkspaceForm = ({ email }: { email: string }) => {
             created && (
               <LinkGithubAccountButton
                 newWorkspaceId={created}
-                githubToken={githubToken}
-                setGithubToken={setGithubToken}
+                githubTokenExist={githubTokenExist}
+                setGithubTokenExist={setGithubTokenExist}
               />
             )
           )}
@@ -385,7 +386,7 @@ const AddWorkspaceForm = ({ email }: { email: string }) => {
             >
               <FaArrowRight size={17} />
               {step === 3
-                ? githubToken
+                ? githubTokenExist
                   ? "Finish"
                   : "Skip"
                 : step === 2
