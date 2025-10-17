@@ -3,13 +3,13 @@
 import { messageType } from "@/types/workspace";
 import openai from "./huggingFace";
 import connectDB from "@/lib/db";
-import { ObjectId } from "mongodb";
+import { ObjectId, PushOperator } from "mongodb";
 
 const handlePrompt = async (
   workspaceId: string,
   text: string,
   author: string,
-  timestamp:string,
+  timestamp: string,
   conversation: messageType[],
 ): Promise<messageType | null> => {
   try {
@@ -31,7 +31,7 @@ const handlePrompt = async (
             $each: [{ author, text, timestamp }, newConversation],
           },
         },
-      } as any,
+      } as PushOperator<Document>,
     );
 
     return updateCurser.modifiedCount === 1 ? newConversation : null;

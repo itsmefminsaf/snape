@@ -29,7 +29,7 @@ const LinkGithubAccountButton = ({
     };
     window.addEventListener("message", handleMessage);
     return () => window.removeEventListener("message", handleMessage);
-  }, []);
+  }, [newWorkspaceId,githubTokenExist]);
 
   const handleConnect = () => {
     setLoading(true);
