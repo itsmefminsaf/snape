@@ -1,7 +1,7 @@
 "use server";
 
 import connectDB from "@/lib/db";
-import { workspaceType } from "@/types/workspace";
+import { messageType, workspaceType } from "@/types/workspace";
 import { ObjectId } from "mongodb";
 
 export const getWorkspaceList = async (
@@ -59,5 +59,21 @@ export const getWorkspaceGithubToken = async (_id: string) => {
     return workspace?.githubToken ? true : false;
   } catch (error) {
     throw new Error(`Error getting workspace data: ${error}`);
+  }
+};
+
+export const fetchConversation = async (
+  _id: string,
+): Promise<messageType[]> => {
+  try {
+    const workspaceCollections = await connectDB("workspaces");
+    const conversations = await workspaceCollections.findOne(
+      { _id: new ObjectId(_id) },
+      { projection: { _id: 0, conversation: 1 } },
+    );
+
+    return conversations?.conversation ? conversations?.conversation : [];
+  } catch (error) {
+    throw new Error(`Error fetching messages: ${error}`);
   }
 };
