@@ -1,21 +1,21 @@
 "use server";
 
 import { messageType } from "@/types/workspace";
-import { OpenAI } from "openai";
+import { createHuggingFace } from "@ai-sdk/huggingface";
+import { generateText, ModelMessage, ToolSet } from "ai";
 
-const client = new OpenAI({
+const huggingFace = createHuggingFace({
   baseURL: "https://router.huggingface.co/v1",
-  apiKey: process.env.HF_TOKEN,
+  apiKey: process.env.OPENAI_API_KEY,
 });
 
-const openai = async (prompt: string, messageHistory: messageType[]) => {
-  const historyMessages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] =
-    messageHistory.map((message) => ({
-      role: message.author === "agent@snape.ai" ? "assistant" : "user",
-      content: message.text,
-    }));
+const askAI = async (prompt: string, messageHistory: messageType[]) => {
+  const historyMessages: ModelMessage[] = messageHistory.map((message) => ({
+    role: message.author === "agent@snape.ai" ? "assistant" : "user",
+    content: message.text,
+  }));
 
-  const messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
+  const messages: ModelMessage[] = [
     {
       role: "system",
       content:
@@ -25,11 +25,11 @@ const openai = async (prompt: string, messageHistory: messageType[]) => {
     { role: "user", content: prompt },
   ] as const;
 
-  const chatCompletion = await client.chat.completions.create({
-    model: "openai/gpt-oss-20b",
+  const chatCompletion = await generateText({
+    model: huggingFace("deepseek-ai/DeepSeek-R1"),
     messages,
   });
-  return chatCompletion.choices[0].message;
+  return chatCompletion.text;
 };
 
-export default openai;
+export default askAI;

@@ -1,7 +1,7 @@
 "use server";
 
 import { messageType } from "@/types/workspace";
-import openai from "./huggingFace";
+import askAI from "./huggingFace";
 import connectDB from "@/lib/db";
 import { ObjectId, PushOperator } from "mongodb";
 
@@ -13,11 +13,11 @@ const handlePrompt = async (
   conversation: messageType[],
 ): Promise<messageType | null> => {
   try {
-    const res = await openai(text, conversation);
+    const res = await askAI(text, conversation);
 
     const newConversation: messageType = {
       author: "agent@snape.ai",
-      text: res.content ? res.content?.toString() : "",
+      text: res,
       timestamp: new Date().toUTCString(),
     };
 

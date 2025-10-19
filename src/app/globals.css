@@ -19,3 +19,7 @@
     @apply flex items-center justify-center;
   }
 }
+
+.prose think{
+  display: hidden;
+}
