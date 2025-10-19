@@ -29,10 +29,10 @@ const Workspace = ({ workspaceData }: { workspaceData: workspaceType }) => {
       const githubConnectedToken = await getWorkspaceGithubToken(
         workspaceData._id,
       );
-      setGithubTokenExist(githubConnectedToken);
-
-      if (githubTokenExist) {
-        setConversation(await fetchConversation(workspaceData._id));
+      if (githubConnectedToken) {
+        setGithubTokenExist(true);
+        const fetchedConversation = await fetchConversation(workspaceData._id);
+        setConversation(fetchedConversation);
       }
 
       setLoading(false);
@@ -64,8 +64,6 @@ const Workspace = ({ workspaceData }: { workspaceData: workspaceType }) => {
                 ))
               )}
 
-              <span ref={scrollToEndRef} />
-
               {thinking && (
                 <div className="center w-fit gap-1 border-2 border-neutral-800 bg-neutral-950/20 p-3 backdrop-blur-2xl">
                   <div
@@ -82,11 +80,14 @@ const Workspace = ({ workspaceData }: { workspaceData: workspaceType }) => {
                   ></div>
                 </div>
               )}
+              
+              <span ref={scrollToEndRef} />
             </div>
             <PromptArea
               conversation={conversation}
               email={user?.email ? user.email : "Unknown"}
               prompt={prompt}
+              thinking={thinking}
               scrollToEndRef={scrollToEndRef}
               setConversation={setConversation}
               setPrompt={setPrompt}

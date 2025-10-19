@@ -16,6 +16,11 @@ const openai = async (prompt: string, messageHistory: messageType[]) => {
     }));
 
   const messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
+    {
+      role: "system",
+      content:
+        " You are an AI agent named 'Snape' who has been integrated to a web application that allow users to create separate workspaces and manage it by prompting you",
+    },
     ...historyMessages,
     { role: "user", content: prompt },
   ] as const;

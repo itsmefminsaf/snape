@@ -3,6 +3,7 @@ import Image from "next/image";
 import { FaUser } from "react-icons/fa";
 import logo from "@/assets/snape.svg";
 import dynamic from "next/dynamic";
+import remarkGfm from "remark-gfm";
 
 const Markdown = dynamic(() => import("react-markdown"), { ssr: false });
 
@@ -25,7 +26,7 @@ const MessageBlock = ({ message }: { message: messageType }) => {
       </p>
 
       <div className="prose prose-invert">
-        <Markdown >{message.text}</Markdown>
+        <Markdown rehypePlugins={[remarkGfm]}>{message.text}</Markdown>
       </div>
     </div>
   );
