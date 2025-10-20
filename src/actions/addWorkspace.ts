@@ -5,20 +5,18 @@ import { ObjectId } from "mongodb";
 
 export const linkGithubAccount = async (workspaceId: string, code: string) => {
   try {
-    const tokenRes = await fetch(`${process.env.AUTH0_DOMAIN}/oauth/token`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        grant_type: "authorization_code",
-        client_id: process.env.AUTH0_CLIENT_ID,
-        client_secret: process.env.AUTH0_CLIENT_SECRET,
-        code,
-        redirect_uri: `${process.env.APP_BASE_URL}/api/auth/github/callback`,
-      }),
-    });
+    const tokenRes = await fetch("https://github.com/login/oauth/access_token", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Accept: "application/json" },
+    body: JSON.stringify({
+      client_id: process.env.GITHUB_CLIENT_ID,
+      client_secret: process.env.GITHUB_CLIENT_SECRET,
+      code,
+    }),
+  });
 
-    const data = await tokenRes.json();
-    const githubToken = data.access_token;
+  const data = await tokenRes.json();
+  const githubToken = data.access_token;
 
     const workspaceCollection = await connectDB("workspaces");
     const update = await workspaceCollection.updateOne(

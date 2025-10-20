@@ -34,7 +34,7 @@ const LinkGithubAccountButton = ({
   const handleConnect = () => {
     setLoading(true);
     window.open(
-      `${process.env.NEXT_PUBLIC_AUTH0_DOMAIN}/authorize?response_type=code&client_id=${process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID}&connection=github&redirect_uri=${encodeURIComponent(window.location.origin + "/api/auth/github/callback")}&scope=repo,user,read:org`,
+      `https://github.com/login/oauth/authorize?client_id=${process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID}&redirect_uri=${encodeURIComponent(window.location.origin + "/api/auth/github/callback")}&scope=repo,user,read:org`,
       "_blank",
     );
   };
