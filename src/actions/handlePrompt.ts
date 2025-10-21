@@ -13,7 +13,7 @@ const handlePrompt = async (
   conversation: messageType[],
 ): Promise<messageType | null> => {
   try {
-    const res = await askAI(text, conversation);
+    const res = await askAI(text, conversation,author,workspaceId);
 
     const newConversation: messageType = {
       author: "agent@snape.ai",

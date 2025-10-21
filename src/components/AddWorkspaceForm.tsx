@@ -11,10 +11,12 @@ import LinkGithubAccountButton from "./LinkGithubAccountButton";
 
 const AddWorkspaceForm = ({ email }: { email: string }) => {
   const permissions = [
+    { name: "Connect Github", id: "connect_github" },
+    { name: "Read repos", id: "read_repo" },
+    { name: "Create repo", id: "create_repo" },
     { name: "Create PR", id: "create_pr" },
     { name: "Create Issue", id: "create_issue" },
     { name: "Commend on issue", id: "comment_on_issue" },
-    { name: "Connect Github", id: "connect_github" },
   ];
 
   const defaultRole = {

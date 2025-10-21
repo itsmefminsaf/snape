@@ -26,10 +26,10 @@ const MessageBlock = ({ message }: { message: messageType }) => {
       </p>
 
       <div className="prose prose-invert">
-        <Markdown rehypePlugins={[remarkGfm]}>{message.text}</Markdown>
+        <Markdown remarkPlugins={[remarkGfm]}>{message.text}</Markdown>
       </div>
     </div>
   );
 };
 
-export default MessageBlock;    
+export default MessageBlock;

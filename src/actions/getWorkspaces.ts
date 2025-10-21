@@ -77,3 +77,43 @@ export const fetchConversation = async (
     throw new Error(`Error fetching messages: ${error}`);
   }
 };
+
+export const getAccessToken = async (
+  workspaceId: string,
+  email: string,
+  permission: string,
+) => {
+  try {
+    const workspaceCollections = await connectDB("workspaces");
+    const result = await workspaceCollections
+      .aggregate([
+        {
+          $match: { _id: new ObjectId(workspaceId) },
+        },
+        {
+          $unwind: "$roles",
+        },
+        {
+          $match: {
+            "roles.members": email,
+            "roles.permissions": permission,
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            githubToken: 1,
+          },
+        },
+      ])
+      .toArray();
+
+      if(!result) return null
+      if(result.length === 0) return null
+      if(!result[0].githubToken) return null
+
+      return result[0].githubToken
+  } catch (error) {
+    throw error;
+  }
+};
