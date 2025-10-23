@@ -1,23 +1,37 @@
 "use server";
 
 import { messageType } from "@/types/workspace";
-import askAI from "./huggingFace";
+import { askAI, askAI2 } from "./huggingFace";
 import connectDB from "@/lib/db";
 import { ObjectId, PushOperator } from "mongodb";
+import getToolCallResult from "./getToolCallResult";
 
 const handlePrompt = async (
   workspaceId: string,
-  text: string,
+  prompt: string,
   author: string,
   timestamp: string,
   conversation: messageType[],
 ): Promise<messageType | null> => {
   try {
-    const res = await askAI(text, conversation,author,workspaceId);
+    const AIresult = await askAI(prompt, conversation);
+
+    const { action, text, params } = JSON.parse(AIresult);
+
+    const toolCallResult = await getToolCallResult(
+      action,
+      workspaceId,
+      author,
+      params,
+    );
+
+    const textAfterToolCalling = text + toolCallResult;
+
+    const finalText = await askAI2(textAfterToolCalling);
 
     const newConversation: messageType = {
       author: "agent@snape.ai",
-      text: res,
+      text: finalText,
       timestamp: new Date().toUTCString(),
     };
 

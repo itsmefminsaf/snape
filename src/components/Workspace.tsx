@@ -17,6 +17,7 @@ const Workspace = ({ workspaceData }: { workspaceData: workspaceType }) => {
   const [prompt, setPrompt] = useState("");
   const [githubTokenExist, setGithubTokenExist] = useState(false);
   const [conversation, setConversation] = useState<messageType[]>([]);
+  const [ConversationError, setConversationError] = useState(false);
   const [thinking, setThinking] = useState(false);
   const scrollToEndRef = useRef<HTMLSpanElement>(null);
 
@@ -80,7 +81,13 @@ const Workspace = ({ workspaceData }: { workspaceData: workspaceType }) => {
                   ></div>
                 </div>
               )}
-              
+
+              {ConversationError && (
+                <div className="center w-fit gap-1 border-2 border-red-800 bg-red-950/20 p-3 text-red-500 backdrop-blur-2xl">
+                  I apologies. Something went wrong
+                </div>
+              )}
+
               <span ref={scrollToEndRef} />
             </div>
             <PromptArea
@@ -93,6 +100,7 @@ const Workspace = ({ workspaceData }: { workspaceData: workspaceType }) => {
               setPrompt={setPrompt}
               setThinking={setThinking}
               workspaceId={workspaceData._id}
+              setConversationError={setConversationError}
             />
           </>
         ) : workspaceData.roles[0].permissions.includes("connect_github") ? (

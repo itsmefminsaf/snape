@@ -10,6 +10,7 @@ const PromptArea = ({
   setPrompt,
   setThinking,
   setConversation,
+  setConversationError,
   conversation,
   email,
 }: {
@@ -22,9 +23,10 @@ const PromptArea = ({
   setPrompt: React.Dispatch<React.SetStateAction<string>>;
   setThinking: React.Dispatch<React.SetStateAction<boolean>>;
   setConversation: React.Dispatch<React.SetStateAction<messageType[]>>;
+  setConversationError: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   const askAI = async () => {
-    if(!prompt.trim()) return
+    if (!prompt.trim()) return;
 
     setPrompt("");
 
@@ -59,8 +61,10 @@ const PromptArea = ({
         },
         newConversation,
       ]);
+    } else {
+      setConversationError(true);
     }
-    
+
     setThinking(false);
     scrollToEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
@@ -82,7 +86,11 @@ const PromptArea = ({
         placeholder="Say something to Snape..."
         className="w-full resize-none px-3 py-2 text-xl outline-none disabled:opacity-50"
       />
-      <button disabled={thinking} className="p-2 disabled:opacity-50" onClick={() => askAI()}>
+      <button
+        disabled={thinking}
+        className="p-2 disabled:opacity-50"
+        onClick={() => askAI()}
+      >
         <BiSend size={25} />
       </button>
     </div>

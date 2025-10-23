@@ -1,54 +1,32 @@
 import { getAccessToken } from "@/actions/getWorkspaces";
-import { jsonSchema, tool } from "ai";
 import { Octokit } from "octokit";
 
-const inputSchema = jsonSchema<{
-  workspaceId: string;
-  email: string;
-  repositoryData: { name: string };
-}>({
-  type: "object",
-  properties: {
-    workspaceId: { type: "string" },
-    email: { type: "string" },
-    repositoryData: {
-      type: "object",
-      properties: { name: { type: "string" } },
-    },
-  },
-});
-
-const execute = async ({
+const createRepo = async ({
   workspaceId,
   email,
   repositoryData,
 }: {
   workspaceId: string;
   email: string;
-  repositoryData: { name: string };
+  repositoryData: { name: string; description: string; private: boolean };
 }) => {
   try {
     const accessToken = await getAccessToken(workspaceId, email, "create_repo");
 
-    if (!accessToken) throw new Error("Permission denied.");
+    if (!accessToken) return "You have no access to create repository...";
 
     const github = new Octokit({ auth: accessToken });
 
     const { data } = await github.request("POST /user/repos", {
       name: repositoryData.name,
+      description: repositoryData.description,
+      private: repositoryData.private ? true : false,
     });
 
-    return data;
+    return JSON.stringify(data);
   } catch (error) {
-    throw error;
+    return "Ohh no, something went wrong";
   }
 };
-
-const createRepo = tool({
-  description:
-    "Create a repository in the given workspaceId only of user has permission to do it",
-  inputSchema,
-  execute,
-});
 
 export default createRepo;

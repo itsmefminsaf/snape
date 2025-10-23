@@ -1,13 +1,7 @@
 import { getAccessToken } from "@/actions/getWorkspaces";
-import { jsonSchema, tool } from "ai";
 import { Octokit } from "octokit";
 
-const inputSchema = jsonSchema<{ workspaceId: string; email: string }>({
-  type: "object",
-  properties: { workspaceId: { type: "string" }, email: { type: "string" } },
-});
-
-const execute = async ({
+const listRepo = async ({
   workspaceId,
   email,
 }: {
@@ -17,7 +11,7 @@ const execute = async ({
   try {
     const accessToken = await getAccessToken(workspaceId, email, "read_repo");
 
-    if (!accessToken) throw new Error("Permission denied.");
+    if (!accessToken) return "You have no access to view repositories...";
 
     const github = new Octokit({ auth: accessToken });
 
@@ -35,17 +29,10 @@ const execute = async ({
       private: repo.private,
     }));
 
-    return filteredRepos
+    return JSON.stringify(filteredRepos);
   } catch (error) {
-    throw error;
+    return "Ohh no, something went wrong";
   }
 };
-
-const listRepo = tool({
-  description:
-    "List repositories for the given workspaceId only of user has permission to view it",
-  inputSchema,
-  execute,
-});
 
 export default listRepo;
