@@ -30,7 +30,7 @@ const listRepo = async ({
     }));
 
     return JSON.stringify(filteredRepos);
-  } catch (error) {
+  } catch {
     return "Ohh no, something went wrong";
   }
 };

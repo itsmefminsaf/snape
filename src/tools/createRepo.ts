@@ -24,7 +24,7 @@ const createRepo = async ({
     });
 
     return JSON.stringify(data);
-  } catch (error) {
+  } catch {
     return "Ohh no, something went wrong";
   }
 };

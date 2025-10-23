@@ -5,7 +5,7 @@ const getToolCallResult = async (
   action: string,
   workspaceId: string,
   email: string,
-  params: any,
+  params: { name: string; description: string; private: boolean },
 ) => {
   switch (action) {
     case "listRepo":
