@@ -26,7 +26,7 @@ const Chat = ({ email }: { email: string }) => {
 
       setLoading(false);
     })();
-  }, []);
+  }, [email]);
 
   const handleSubmit = async () => {
     if (!prompt.trim()) return;

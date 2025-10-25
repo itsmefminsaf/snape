@@ -1,51 +1,35 @@
 "use server";
 
 import { createHuggingFace } from "@ai-sdk/huggingface";
-import { generateText, ModelMessage } from "ai";
+import { generateObject, generateText, ModelMessage, ToolContent } from "ai";
 import { messageType } from "../../types/message";
+import { toolSelectType } from "../../types/toolSelect";
+import z from "zod";
 
 const huggingFace = createHuggingFace({
   apiKey: process.env.HF_TOKEN,
 });
 
-export const askAI = async (prompt: string, messageHistory: messageType[]) => {
+export const snape = async (
+  prompt: string,
+  tool: ToolContent,
+  messageHistory: messageType[],
+) => {
   const historyMessages: ModelMessage[] = messageHistory.map((message) => ({
     role: message.author,
     content: message.text,
   }));
 
-  const toolSchema = {
-    text: "Your text response",
-    action: "listRepo | createRepo | createIssue | none",
-    params: {
-      listRepo: {},
-      createIssue: {
-        repo: "name of the repo get from prev conversation",
-        issueData: { title: "title of the issue", body: "body if needed" },
-      },
-      createRepo: { name: "repo name", description: "desc", private: true },
-    },
-  };
-
-  const systemPrompt = `You are an AI agent called "Snape" integrated into a web app that manages GitHub accounts.
-Always respond with a **valid JSON object** and nothing else.
-The JSON must exactly follow this structure:
-
-${JSON.stringify(toolSchema, null, 2)}
-
-Rules:
-1. Do not include markdown, code blocks, or commentary.
-2. Do not explain your reasoning.
-3. Output ONLY the JSON object.
-4. If unsure about tool choice, use "none".
-`;
+  const system =
+    "You are an AI agent called 'Snape' integrated into a web app that manages GitHub accounts";
 
   const messages: ModelMessage[] = [
     {
       role: "system",
-      content: systemPrompt,
+      content: system,
     },
     ...historyMessages,
+    { role: "tool", content: tool },
     { role: "user", content: prompt },
   ];
 
@@ -56,14 +40,47 @@ Rules:
 
   return chatCompletion.text;
 };
-
-export const askAI2 = async (prompt: string) => {
-  const chatCompletion = await generateText({
+export const toolSelect = async (prompt: string) => {
+  const { object } = await generateObject({
     model: huggingFace.languageModel("moonshotai/Kimi-K2-Instruct"),
-    system:
-      "You are a secondary AI model who can make the first AI models response text and tool call result into a Nice markdown format so users can easily view it.",
+    schema: z.object({
+      action: z.enum([
+        "listRepo",
+        "createRepo",
+        "createIssue",
+        "none",
+        "dataRequired",
+      ]),
+      params: z.union([
+        z
+          .object({ type: z.enum(["private", "public", "all"]).default("all") })
+          .default({ type: "all" }),
+        z
+          .object({
+            name: z.string().default("new-repo"),
+            description: z.string().default(""),
+            private: z.boolean().default(false),
+          })
+          .partial()
+          .default({}),
+        z
+          .object({
+            repoName: z.string().default(""),
+            title: z.string().default(""),
+            body: z.string().default(""),
+          })
+          .partial()
+          .default({}),
+        z.array(z.string()).optional().default([]),
+        z.literal("none").optional().default("none"),
+      ]),
+    }),
+    system: `
+You are an AI model that selects which GitHub tool to call.
+Always output valid JSON with { "action": "...", "params": { ... } }.
+If unsure of params, provide a safe default instead of an empty object.`,
     prompt,
   });
 
-  return chatCompletion.text;
+  return object as toolSelectType;
 };

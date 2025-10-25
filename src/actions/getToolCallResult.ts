@@ -2,38 +2,74 @@
 
 import createRepo from "@/tools/createRepo";
 import listRepo from "@/tools/listRepo";
-import { askAI2 } from "./huggingFace";
 import createIssue from "@/tools/createIssue";
+import { toolSelectType } from "../../types/toolSelect";
+import { ToolContent } from "ai";
 
-const getToolCallResult = async (
-  action: string,
-  text: string,
-  params: {
-    createRepo: { name: string; description: string; private: boolean };
-    createIssue: { repo: string; issueData: { title: string; body?: string } };
-  },
-) => {
+const getToolCallResult = async ({
+  action,
+  params,
+}: toolSelectType): Promise<ToolContent> => {
   switch (action) {
     case "listRepo":
-      return await askAI2(text + (await listRepo()));
+      return [
+        {
+          toolName: action,
+          toolCallId: "",
+          type: "tool-result",
+          output: { type: "json", value: await listRepo() },
+        },
+      ];
 
     case "createRepo":
-      return await askAI2(text + (await createRepo(params.createRepo)));
+      return [
+        {
+          toolName: action,
+          toolCallId: "",
+          type: "tool-result",
+          output: { type: "json", value: await createRepo(params) },
+        },
+      ];
 
     case "createIssue":
-      return await askAI2(
-        text +
-          (await createIssue(
-            params.createIssue.repo,
-            params.createIssue.issueData,
-          )),
-      );
+      return [
+        {
+          toolName: action,
+          toolCallId: "",
+          type: "tool-result",
+          output: { type: "json", value: await createIssue(params) },
+        },
+      ];
+
+    case "dataRequired":
+      return [
+        {
+          toolName: action,
+          toolCallId: "",
+          type: "tool-result",
+          output: { type: "json", value: params },
+        },
+      ];
 
     case "none":
-      return text;
+      return [
+        {
+          toolName: action,
+          toolCallId: "",
+          type: "tool-result",
+          output: { type: "json", value: "" },
+        },
+      ];
 
     default:
-      return text;
+      return [
+        {
+          toolName: action,
+          toolCallId: "",
+          type: "tool-result",
+          output: { type: "json", value: "" },
+        },
+      ];
   }
 };
 

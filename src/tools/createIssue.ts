@@ -1,10 +1,15 @@
 import auth0 from "@/lib/auth";
 import { Octokit } from "octokit";
 
-const createIssue = async (
-  repo: string,
-  issueData: { title: string; body?: string },
-) => {
+const createIssue = async ({
+  repo,
+  title,
+  body,
+}: {
+  repo: string;
+  title: string;
+  body: string;
+}) => {
   try {
     const { token } = await auth0.getAccessTokenForConnection({
       connection: "github",
@@ -17,8 +22,8 @@ const createIssue = async (
     const { data } = await github.request("POST /repos/{owner}/{repo}/issues", {
       owner: (await github.request("GET /user")).data.login,
       repo,
-      title: issueData.title,
-      body: issueData.body || "",
+      title,
+      body,
     });
 
     return JSON.stringify(data);

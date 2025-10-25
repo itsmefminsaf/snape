@@ -1,10 +1,10 @@
 "use server";
 
-import { askAI } from "./huggingFace";
 import connectDB from "@/lib/db";
 import { PushOperator } from "mongodb";
 import getToolCallResult from "./getToolCallResult";
 import { messageType } from "../../types/message";
+import { snape, toolSelect } from "./huggingFace";
 
 const handlePrompt = async (
   email: string,
@@ -13,15 +13,15 @@ const handlePrompt = async (
   oldConversation: messageType[],
 ): Promise<messageType | null> => {
   try {
-    const AIresult = await askAI(prompt, oldConversation);
+    const tool = await toolSelect(prompt);
 
-    const { action, text, params } = JSON.parse(AIresult);
+    const toolCallResult = await getToolCallResult(tool);
 
-    const toolCallResult = await getToolCallResult(action, text, params);
+    const text = await snape(prompt, toolCallResult, oldConversation);
 
     const AIMessage: messageType = {
       author: "assistant",
-      text: toolCallResult,
+      text,
       timestamp: new Date().toUTCString(),
     };
 
