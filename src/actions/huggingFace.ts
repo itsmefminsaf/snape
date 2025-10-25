@@ -16,9 +16,13 @@ export const askAI = async (prompt: string, messageHistory: messageType[]) => {
 
   const toolSchema = {
     text: "Your text response",
-    action: "listRepo | createRepo | none",
+    action: "listRepo | createRepo | createIssue | none",
     params: {
       listRepo: {},
+      createIssue: {
+        repo: "name of the repo get from prev conversation",
+        issueData: { title: "title of the issue", body: "body if needed" },
+      },
       createRepo: { name: "repo name", description: "desc", private: true },
     },
   };
