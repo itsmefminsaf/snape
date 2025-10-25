@@ -41,7 +41,8 @@ const handlePrompt = async (
 
     return updated.acknowledged ? AIMessage : null;
   } catch (error) {
-    throw error;
+    console.log(error);
+    return null;
   }
 };
 

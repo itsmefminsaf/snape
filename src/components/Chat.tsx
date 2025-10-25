@@ -31,6 +31,7 @@ const Chat = ({ email }: { email: string }) => {
   const handleSubmit = async () => {
     if (!prompt.trim()) return;
 
+    setConversationError(false);
     const timestamp = new Date().toUTCString();
 
     const userMessage: messageType = {

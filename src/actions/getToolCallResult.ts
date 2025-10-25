@@ -7,14 +7,17 @@ import { askAI2 } from "./huggingFace";
 const getToolCallResult = async (
   action: string,
   text: string,
-  params: { name: string; description: string; private: boolean },
+  params: {
+    listRepo: {};
+    createRepo: { name: string; description: string; private: boolean };
+  },
 ) => {
   switch (action) {
     case "listRepo":
       return await askAI2(text + (await listRepo()));
 
     case "createRepo":
-      return await askAI2(text + (await createRepo(params)));
+      return await askAI2(text + (await createRepo(params.createRepo)));
 
     case "none":
       return text;
