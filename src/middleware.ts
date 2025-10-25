@@ -1,8 +1,8 @@
 import { NextRequest } from "next/server";
-import { auth } from "./lib/auth";
+import auth0 from "./lib/auth";
 
 const middleware = (req: NextRequest) => {
-  return auth.middleware(req);
+  return auth0.middleware(req);
 };
 
 export default middleware;

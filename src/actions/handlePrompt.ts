@@ -1,57 +1,47 @@
 "use server";
 
-import { messageType } from "@/types/workspace";
-import { askAI, askAI2 } from "./huggingFace";
+import { askAI } from "./huggingFace";
 import connectDB from "@/lib/db";
-import { ObjectId, PushOperator } from "mongodb";
+import { PushOperator } from "mongodb";
 import getToolCallResult from "./getToolCallResult";
+import { messageType } from "../../types/message";
 
 const handlePrompt = async (
-  workspaceId: string,
+  email: string,
   prompt: string,
-  author: string,
   timestamp: string,
-  conversation: messageType[],
+  oldConversation: messageType[],
 ): Promise<messageType | null> => {
   try {
-    const AIresult = await askAI(prompt, conversation);
+    const AIresult = await askAI(prompt, oldConversation);
 
     const { action, text, params } = JSON.parse(AIresult);
 
-    const toolCallResult = await getToolCallResult(
-      action,
-      workspaceId,
-      author,
-      params,
-    );
+    const toolCallResult = await getToolCallResult(action, text, params);
 
-    const textAfterToolCalling = text + toolCallResult;
-
-    const finalText = await askAI2(textAfterToolCalling);
-
-    const newConversation: messageType = {
-      author: "agent@snape.ai",
-      text: finalText,
+    const AIMessage: messageType = {
+      author: "assistant",
+      text: toolCallResult,
       timestamp: new Date().toUTCString(),
     };
 
-    const workspaceCollection = await connectDB("workspaces");
+    const workspaceCollection = await connectDB();
 
-    const updateCurser = await workspaceCollection.updateOne(
-      { _id: new ObjectId(workspaceId) },
+    const updated = await workspaceCollection.updateOne(
+      { email },
       {
         $push: {
           conversation: {
-            $each: [{ author, text, timestamp }, newConversation],
+            $each: [{ author: "user", text: prompt, timestamp }, AIMessage],
           },
         },
       } as PushOperator<Document>,
+      { upsert: true },
     );
 
-    return updateCurser.modifiedCount === 1 ? newConversation : null;
+    return updated.acknowledged ? AIMessage : null;
   } catch (error) {
-    console.log(`Error prompting: ${error}`);
-    return null;
+    throw error;
   }
 };
 

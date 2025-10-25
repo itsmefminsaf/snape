@@ -1,8 +1,8 @@
 "use server";
 
-import { messageType } from "@/types/workspace";
 import { createHuggingFace } from "@ai-sdk/huggingface";
 import { generateText, ModelMessage } from "ai";
+import { messageType } from "../../types/message";
 
 const huggingFace = createHuggingFace({
   apiKey: process.env.HF_TOKEN,
@@ -10,7 +10,7 @@ const huggingFace = createHuggingFace({
 
 export const askAI = async (prompt: string, messageHistory: messageType[]) => {
   const historyMessages: ModelMessage[] = messageHistory.map((message) => ({
-    role: message.author === "agent@snape.ai" ? "assistant" : "user",
+    role: message.author,
     content: message.text,
   }));
 
@@ -23,7 +23,7 @@ export const askAI = async (prompt: string, messageHistory: messageType[]) => {
         " text: '<Your text response>'," +
         " params: '<parameters object to call the tool<listRepo:{<nothing>}," +
         "createRepo:{name,description,private?<only return only if the repo is private<booleans>>}>>'}" +
-        "If you return the json string the backend can easily parse it and call the tool",
+        "If you return the json string the backend can easily parse it and call the tool. Choose tools smartly only if user needs that",
     },
     ...historyMessages,
     { role: "user", content: prompt },

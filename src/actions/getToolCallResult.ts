@@ -1,28 +1,26 @@
+"use server";
+
 import createRepo from "@/tools/createRepo";
 import listRepo from "@/tools/listRepo";
+import { askAI2 } from "./huggingFace";
 
 const getToolCallResult = async (
   action: string,
-  workspaceId: string,
-  email: string,
+  text: string,
   params: { name: string; description: string; private: boolean },
 ) => {
   switch (action) {
     case "listRepo":
-      return await listRepo({ workspaceId, email });
+      return await askAI2(text + (await listRepo()));
 
     case "createRepo":
-      return await createRepo({
-        workspaceId,
-        email,
-        repositoryData: params,
-      });
+      return await askAI2(text + (await createRepo(params)));
 
     case "none":
-      return "";
+      return text;
 
     default:
-      return "";
+      return text;
   }
 };
 

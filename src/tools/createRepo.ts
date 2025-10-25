@@ -1,17 +1,15 @@
-import { getAccessToken } from "@/actions/getWorkspaces";
+import auth0 from "@/lib/auth";
 import { Octokit } from "octokit";
 
-const createRepo = async ({
-  workspaceId,
-  email,
-  repositoryData,
-}: {
-  workspaceId: string;
-  email: string;
-  repositoryData: { name: string; description: string; private: boolean };
+const createRepo = async (repositoryData: {
+  name: string;
+  description: string;
+  private: boolean;
 }) => {
   try {
-    const accessToken = await getAccessToken(workspaceId, email, "create_repo");
+    const accessToken = await auth0.getAccessTokenForConnection({
+      connection: "github",
+    });
 
     if (!accessToken) return "You have no access to create repository...";
 

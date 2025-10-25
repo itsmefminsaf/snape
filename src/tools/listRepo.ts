@@ -1,15 +1,11 @@
-import { getAccessToken } from "@/actions/getWorkspaces";
+import auth0 from "@/lib/auth";
 import { Octokit } from "octokit";
 
-const listRepo = async ({
-  workspaceId,
-  email,
-}: {
-  workspaceId: string;
-  email: string;
-}) => {
+const listRepo = async () => {
   try {
-    const accessToken = await getAccessToken(workspaceId, email, "read_repo");
+    const accessToken = await auth0.getAccessTokenForConnection({
+      connection: "github",
+    });
 
     if (!accessToken) return "You have no access to view repositories...";
 

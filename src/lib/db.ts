@@ -15,12 +15,12 @@ if (!clientPromise) {
   });
 }
 
-const connectDB = async (collectionName: string) => {
+const connectDB = async () => {
   if (!client) {
     client = await clientPromise;
   }
 
-  return client.db(process.env.NODE_ENV).collection(collectionName);
+  return client.db(process.env.NODE_ENV).collection("users");
 };
 
 export default connectDB;

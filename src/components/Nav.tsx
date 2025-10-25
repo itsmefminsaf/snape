@@ -4,16 +4,17 @@ import Image from "next/image";
 import logo from "@/assets/snape.svg";
 import { IoIosArrowDown } from "react-icons/io";
 import { IoAdd } from "react-icons/io5";
-import { useAppState } from "@/context/appState";
-import { BiMenu } from "react-icons/bi";
+import { BiLogOut, BiMenu, BiUser } from "react-icons/bi";
 import { useState } from "react";
 import { CgClose } from "react-icons/cg";
 import Link from "next/link";
 import { BsGithub } from "react-icons/bs";
+import { useUser } from "@auth0/nextjs-auth0";
 
-const Nav = ({ picture }: { picture: string }) => {
-  const appState = useAppState();
+const Nav = () => {
+  const { user } = useUser();
   const [showMenu, setShowMenu] = useState(false);
+  const [showProfileDropDown, setShowProfileDropDown] = useState(false);
 
   return (
     <nav className="grid h-16 grid-cols-[auto_1fr_auto] border-b-2 border-b-neutral-800 bg-neutral-950/50 text-white backdrop-blur-2xl sm:h-20 lg:grid-cols-[auto_1fr_auto_auto]">
@@ -57,27 +58,49 @@ const Nav = ({ picture }: { picture: string }) => {
         </li>
       </ul>
 
-      <button
+      <Link
         className="center gap-1 justify-self-end px-3 text-sm text-nowrap hover:bg-neutral-950/50 hover:backdrop-blur-2xl sm:px-5 sm:text-lg lg:border-l-2 lg:border-l-neutral-800"
-        onClick={() => appState?.setState.setShowAddWorkSpaceForm(true)}
+        href="/dashboard/workspace/new"
       >
         <IoAdd size={23} />
         New Workspace
-      </button>
+      </Link>
 
       <div
         className="center w-fit gap-1 border-l-2 border-l-neutral-800 px-3 sm:gap-3 sm:px-5"
-        onClick={() => appState?.setState.setShowProfileDropDown(true)}
+        onClick={() => setShowProfileDropDown(true)}
       >
-        <Image
-          className="size-6 sm:size-10"
-          src={picture}
-          alt="user's profile"
-          width={40}
-          height={40}
-        />
+        {user?.picture ? (
+          <Image
+            className="size-6 sm:size-10"
+            src={user?.picture!}
+            alt="user's profile"
+            width={40}
+            height={40}
+          />
+        ) : (
+          <BiUser />
+        )}
         <IoIosArrowDown />
       </div>
+      {showProfileDropDown && (
+        <div className="absolute top-full right-0 z-50 min-w-52 space-y-2 border-2 border-neutral-800 bg-neutral-950/50 px-5 py-3 text-white backdrop-blur-2xl">
+          <button
+            className="flex w-full items-center justify-between gap-3"
+            onClick={() => setShowProfileDropDown(false)}
+          >
+            <p className="text-lg text-nowrap">{user?.name!}</p>
+            <CgClose size={20} />
+          </button>
+          <hr />
+          <ul>
+            <li className="flex items-center gap-3 px-2 py-1 duration-300 hover:bg-neutral-800/50">
+              <BiLogOut />
+              <Link href="/auth/logout">Logout</Link>
+            </li>
+          </ul>
+        </div>
+      )}
     </nav>
   );
 };

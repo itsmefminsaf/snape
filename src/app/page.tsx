@@ -1,17 +1,11 @@
-import Dashboard from "@/components/Dashboard";
 import LandingPage from "@/components/LandingPage";
-import AppStateProvider from "@/context/appState";
-import { auth } from "@/lib/auth";
+import auth0 from "@/lib/auth";
+import { redirect } from "next/navigation";
 
 const HomePage = async () => {
-  const session = await auth.getSession();
+  const session = await auth0.getSession();
 
-  if (session?.user)
-    return (
-      <AppStateProvider>
-        <Dashboard user={session.user} />
-      </AppStateProvider>
-    );
+  if (session?.user) return redirect("/dashboard");
 
   return <LandingPage />;
 };
