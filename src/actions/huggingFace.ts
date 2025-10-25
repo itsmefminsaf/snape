@@ -14,16 +14,32 @@ export const askAI = async (prompt: string, messageHistory: messageType[]) => {
     content: message.text,
   }));
 
+  const toolSchema = {
+    text: "Your text response",
+    action: "listRepo | createRepo | none",
+    params: {
+      listRepo: {},
+      createRepo: { name: "repo name", description: "desc", private: true },
+    },
+  };
+
+  const systemPrompt = `You are an AI agent integrated into a web app that manages GitHub accounts.
+Always respond with a **valid JSON object** and nothing else.
+The JSON must exactly follow this structure:
+
+${JSON.stringify(toolSchema, null, 2)}
+
+Rules:
+1. Do not include markdown, code blocks, or commentary.
+2. Do not explain your reasoning.
+3. Output ONLY the JSON object.
+4. If unsure about tool choice, use "none".
+`;
+
   const messages: ModelMessage[] = [
     {
       role: "system",
-      content:
-        "You are an AI agent who has been integrated into a web application that allow users to easily maintain their GitHub account. Your response text must be a valid JSON and should follow this structure." +
-        "{action:'<the tool name<listRepo | createRepo | none>>'," +
-        " text: '<Your text response>'," +
-        " params: '<parameters object to call the tool<listRepo:{<nothing>}," +
-        "createRepo:{name,description,private?<only return only if the repo is private<booleans>>}>>'}" +
-        "If you return the json string the backend can easily parse it and call the tool. Choose tools smartly only if user needs that",
+      content: systemPrompt,
     },
     ...historyMessages,
     { role: "user", content: prompt },

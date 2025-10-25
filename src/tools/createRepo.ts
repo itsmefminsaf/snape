@@ -7,13 +7,13 @@ const createRepo = async (repositoryData: {
   private: boolean;
 }) => {
   try {
-    const accessToken = await auth0.getAccessTokenForConnection({
+    const { token } = await auth0.getAccessTokenForConnection({
       connection: "github",
     });
 
-    if (!accessToken) return "You have no access to create repository...";
+    if (!token) return "You have no access to create repository...";
 
-    const github = new Octokit({ auth: accessToken });
+    const github = new Octokit({ auth: token });
 
     const { data } = await github.request("POST /user/repos", {
       name: repositoryData.name,

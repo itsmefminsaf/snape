@@ -3,13 +3,13 @@ import { Octokit } from "octokit";
 
 const listRepo = async () => {
   try {
-    const accessToken = await auth0.getAccessTokenForConnection({
+    const { token } = await auth0.getAccessTokenForConnection({
       connection: "github",
     });
 
-    if (!accessToken) return "You have no access to view repositories...";
+    if (!token) return "You have no access to view repositories...";
 
-    const github = new Octokit({ auth: accessToken });
+    const github = new Octokit({ auth: token });
 
     const { data } = await github.request("GET /user/repos", {
       visibility: "all",

@@ -4,14 +4,10 @@ import logo from "@/assets/snape.svg";
 import dynamic from "next/dynamic";
 import remarkGfm from "remark-gfm";
 import { messageType } from "../../types/message";
-import { useRef } from "react";
 
 const Markdown = dynamic(() => import("react-markdown"), { ssr: false });
 
 const MessageBubble = ({ message }: { message: messageType }) => {
-  const ref = useRef<HTMLDivElement>(null);
-  ref.current?.scrollIntoView({ behavior: "smooth" });
-
   return (
     <div
       className={`${message.author === "user" && "ml-auto bg-white text-neutral-950"} mb-3 grid w-fit grid-cols-[40px_auto] grid-rows-[10px_auto] gap-2 gap-y-2 border-2 border-neutral-800 p-2`}
@@ -33,7 +29,7 @@ const MessageBubble = ({ message }: { message: messageType }) => {
       </p>
 
       {message.author === "assistant" ? (
-        <div className="prose prose-invert" ref={ref}>
+        <div className="prose prose-invert">
           <Markdown remarkPlugins={[remarkGfm]}>{message.text}</Markdown>
         </div>
       ) : (
