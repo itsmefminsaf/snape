@@ -22,7 +22,8 @@ const createRepo = async (repositoryData: {
     });
 
     return JSON.stringify(data);
-  } catch {
+  } catch (error) {
+    console.log(error);
     return "Ohh no, something went wrong";
   }
 };

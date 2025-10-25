@@ -26,7 +26,8 @@ const listRepo = async () => {
     }));
 
     return JSON.stringify(filteredRepos);
-  } catch {
+  } catch (error) {
+    console.log(error);
     return "Ohh no, something went wrong";
   }
 };

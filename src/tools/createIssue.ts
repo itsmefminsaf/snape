@@ -22,7 +22,8 @@ const createIssue = async (
     });
 
     return JSON.stringify(data);
-  } catch {
+  } catch (error) {
+    console.log(error);
     return "Ohh no, something went wrong while creating issue";
   }
 };
