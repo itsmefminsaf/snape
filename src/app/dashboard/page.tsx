@@ -10,7 +10,7 @@ const DashboardPage = async () => {
 
   return (
     <>
-      <Nav />
+      <Nav name={session.user.name!} picture={session.user.picture!} />
       <Chat email={session.user.email!} />
     </>
   );

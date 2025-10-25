@@ -8,7 +8,6 @@ const getToolCallResult = async (
   action: string,
   text: string,
   params: {
-    listRepo: {};
     createRepo: { name: string; description: string; private: boolean };
   },
 ) => {

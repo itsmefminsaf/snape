@@ -9,10 +9,8 @@ import { useState } from "react";
 import { CgClose } from "react-icons/cg";
 import Link from "next/link";
 import { BsGithub } from "react-icons/bs";
-import { useUser } from "@auth0/nextjs-auth0";
 
-const Nav = () => {
-  const { user } = useUser();
+const Nav = ({ name, picture }: { name: string; picture: string }) => {
   const [showMenu, setShowMenu] = useState(false);
   const [showProfileDropDown, setShowProfileDropDown] = useState(false);
 
@@ -70,10 +68,10 @@ const Nav = () => {
         className="center w-fit gap-1 border-l-2 border-l-neutral-800 px-3 sm:gap-3 sm:px-5"
         onClick={() => setShowProfileDropDown(true)}
       >
-        {user?.picture ? (
+        {picture ? (
           <Image
             className="size-6 sm:size-10"
-            src={user?.picture!}
+            src={picture}
             alt="user's profile"
             width={40}
             height={40}
@@ -89,7 +87,7 @@ const Nav = () => {
             className="flex w-full items-center justify-between gap-3"
             onClick={() => setShowProfileDropDown(false)}
           >
-            <p className="text-lg text-nowrap">{user?.name!}</p>
+            <p className="text-lg text-nowrap">{name}</p>
             <CgClose size={20} />
           </button>
           <hr />
