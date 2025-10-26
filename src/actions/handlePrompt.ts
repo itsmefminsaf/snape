@@ -2,9 +2,8 @@
 
 import connectDB from "@/lib/db";
 import { PushOperator } from "mongodb";
-import getToolCallResult from "./getToolCallResult";
 import { messageType } from "../../types/message";
-import { snape, toolSelect } from "./huggingFace";
+import { snape } from "./huggingFace";
 
 const handlePrompt = async (
   email: string,
@@ -13,11 +12,7 @@ const handlePrompt = async (
   oldConversation: messageType[],
 ): Promise<messageType | null> => {
   try {
-    const tool = await toolSelect(prompt);
-
-    const toolCallResult = await getToolCallResult(tool);
-
-    const text = await snape(prompt, toolCallResult, oldConversation);
+    const text = await snape(prompt, oldConversation);
 
     const AIMessage: messageType = {
       author: "assistant",
